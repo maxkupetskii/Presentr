@@ -68,15 +68,32 @@ public enum AlertActionStyle {
 
 }
 
-private enum Font: String {
+private struct FontManager {
+    public static func registerFonts() {
+        Font.allCases.forEach {
+           registerFont(bundle: .module, fontName: $0.rawValue, fontExtension: "ttf")
+       }
+    }
 
+    static func registerFont(bundle: Bundle, fontName: String, fontExtension: String) {
+        guard let fontURL = bundle.url(forResource: fontName, withExtension: fontExtension),
+              let fontDataProvider = CGDataProvider(url: fontURL as CFURL),
+              let font = CGFont(fontDataProvider) else {
+                  fatalError("Couldn't create font from data")
+        }
+
+        var error: Unmanaged<CFError>?
+        CTFontManagerRegisterGraphicsFont(font, &error)
+    }
+}
+
+private enum Font: String, CaseIterable {
     case Montserrat = "Montserrat-Regular"
     case SourceSansPro = "SourceSansPro-Regular"
 
     func font(_ size: CGFloat = 15.0) -> UIFont {
         return UIFont(name: self.rawValue, size: size)!
     }
-
 }
 
 private struct ColorPalette {
@@ -131,6 +148,7 @@ public class AlertViewController: UIViewController, CornerRadiusSettable {
 	@IBOutlet private weak var containerView: UIView!
 
 	public init(title: String? = nil, body: String? = nil, titleFont: UIFont? = nil, bodyFont: UIFont? = nil, buttonFont: UIFont? = nil) {
+        FontManager.registerFonts()
 		if let title = title {
 			titleText = title
 		}
@@ -143,7 +161,7 @@ public class AlertViewController: UIViewController, CornerRadiusSettable {
 		self.bodyFont = bodyFont
 		self.buttonFont = buttonFont
 
-		super.init(nibName: "AlertViewController", bundle: Bundle(for: type(of: self)))
+        super.init(nibName: "AlertViewController", bundle: Bundle.module)
 	}
 
 	required public init?(coder aDecoder: NSCoder) {
