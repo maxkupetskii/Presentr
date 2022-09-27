@@ -1,0 +1,16 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Presentr",
+        "repositoryURL": "https://github.com/maxkupetskii/Presentr",
+        "state": {
+          "branch": null,
+          "revision": "b374b5c66183b7a6abf093a062c5e187f10c70d7",
+          "version": "2.0.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
